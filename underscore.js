@@ -76,6 +76,23 @@ var _  = {};
     Output    : collection of elements that passes test(value, index/key)
   */
   _.filter = function(collection, test) {
+    var pass = [];
+    var passObject = {};
+   if(Array.isArray(collection)){
+      for( var i=0;i<collection.length;i++) {
+        if(test(collection[i],i)) {
+          pass.push(collection[i]);
+        }
+      }
+        return pass;
+    }else if(typeof collection === "object") {
+      for( keys in collection) {
+        if(test(collection[keys],keys)) {
+          passObject[keys]=collection[keys];
+        }
+      }
+      return passObject;
+    } 
   };
 
   /*
@@ -84,6 +101,23 @@ var _  = {};
   */
   _.reject = function(collection, test) {
     //Try to re-use _.filter
+    var pass = [];
+    var passObject = {};
+   if(Array.isArray(collection)){
+      for( var i=0;i<collection.length;i++) {
+        if(!test(collection[i],i)) {
+          pass.push(collection[i]);
+        }
+      }
+        return pass;
+    }else if(typeof collection === "object") {
+      for( keys in collection) {
+        if(!test(collection[keys],keys)) {
+          passObject[keys]=collection[keys];
+        }
+      }
+      return passObject;
+    } 
   };
 
   /*
@@ -94,6 +128,19 @@ var _  = {};
                 the return value of the previous iterator call.
   */
   _.reduce = function(collection, iterator, accumulator) {
+    var current = accumulator;
+    if(Array.isArray(collection)) {
+      for (var i = 0; i < collection.length; i++) {
+        current = iterator(current,collection[i]);
+      }
+      return current;
+    }else if (typeof collection === "object") {
+      for ( key in collection) {
+        current = iterator(current,collection[key]);
+      }
+      return current;
+    }
+    
   };
 
   /*
