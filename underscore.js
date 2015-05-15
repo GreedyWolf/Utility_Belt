@@ -19,6 +19,11 @@ var _  = {};
     Output    : last n elements of array
   */
   _.last = function(array, n) {
+    n = n || 1;
+    if(n<0) {
+      return array.slice(-n,array.length);
+    }
+    return array.slice(array.length-n, array.length);
   };
 
   /*
@@ -28,6 +33,15 @@ var _  = {};
     Tips      : Array.isArray(collection) will return a boolean value for if collection is an array
   */
   _.each = function(collection, iterator) {
+    if(Array.isArray(collection)){
+      for( var i=0;i<collection.length;i++){
+        iterator(collection[i],i);
+      }
+    }else if(typeof collection === "object"){
+      for( keys in collection) {
+          iterator(collection[keys],keys,collection);
+      }
+    }
   };
 
   /*
@@ -36,6 +50,25 @@ var _  = {};
     Function  : return first index where value equals target
   */
   _.indexOf = function(collection, target) {
+    if(Array.isArray(collection)){
+      var match = false;
+      for(var index = 0; index < collection.length; index++){
+        if(collection[index] === target) {
+          match = true;
+          return index;
+        }
+      }
+      if(!match) {
+        return index = -1;
+      }
+
+    }else if (typeof collection === "object") {
+      for (keys in collection) {
+        if(collection[keys] === target) {
+          return keys;
+        }
+      }
+    }
   };
 
   /*
@@ -43,6 +76,23 @@ var _  = {};
     Output    : collection of elements that passes test(value, index/key)
   */
   _.filter = function(collection, test) {
+    var pass = [];
+    var passObject = {};
+   if(Array.isArray(collection)){
+      for( var i=0;i<collection.length;i++) {
+        if(test(collection[i],i)) {
+          pass.push(collection[i]);
+        }
+      }
+        return pass;
+    }else if(typeof collection === "object") {
+      for( keys in collection) {
+        if(test(collection[keys],keys)) {
+          passObject[keys]=collection[keys];
+        }
+      }
+      return passObject;
+    } 
   };
 
   /*
@@ -51,6 +101,23 @@ var _  = {};
   */
   _.reject = function(collection, test) {
     //Try to re-use _.filter
+    var pass = [];
+    var passObject = {};
+   if(Array.isArray(collection)){
+      for( var i=0;i<collection.length;i++) {
+        if(!test(collection[i],i)) {
+          pass.push(collection[i]);
+        }
+      }
+        return pass;
+    }else if(typeof collection === "object") {
+      for( keys in collection) {
+        if(!test(collection[keys],keys)) {
+          passObject[keys]=collection[keys];
+        }
+      }
+      return passObject;
+    } 
   };
 
   /*
@@ -61,6 +128,19 @@ var _  = {};
                 the return value of the previous iterator call.
   */
   _.reduce = function(collection, iterator, accumulator) {
+    var current = accumulator;
+    if(Array.isArray(collection)) {
+      for (var i = 0; i < collection.length; i++) {
+        current = iterator(current,collection[i]);
+      }
+      return current;
+    }else if (typeof collection === "object") {
+      for ( key in collection) {
+        current = iterator(current,collection[key]);
+      }
+      return current;
+    }
+    
   };
 
   /*
