@@ -257,12 +257,12 @@ var _  = {};
         process.push(functionOrKey.apply(collection[i],Array.prototype.slice.call(arguments,2)));
       }
       return process;
-    }else if(typeof collection === "object") {
+    }else if(typeof collection === "object" && typeof functionOrKey === 'string' ) {
       for(keys in collection) {
-        processObject[keys] = keys.apply(collection[keys],keys.call(arguments,2));
+        processObject[keys] = collection[keys][functionOrKey].apply(collection[keys],Array.prototype.slice.call(arguments,2));
       }
       return processObject;
-
+      
     }
   };
 
@@ -271,6 +271,13 @@ var _  = {};
     Output    : one object with all keys combined, older key will be overwritten by newer keys
    */
   _.extend = function(obj){
+    var combined = {};
+    for( var i = 0 ; i<arguments.length; i++) {
+      for( keys in arguments[i]) {
+        combined[keys] = arguments[i][keys];
+      }
+    }
+    return combined;
   };
 
 
@@ -279,6 +286,15 @@ var _  = {};
     Output    : one object with all keys combined, older key will not be overwritten
    */
   _.defaults = function(obj){
+    var combined = {};
+    for ( var i = 0; i<arguments.length; i++) {
+      for (keys in arguments[i]) {
+        if(! combined.hasOwnProperty(keys)) {
+          combined[keys] = arguments[i][keys];
+        }
+      }
+    }
+    return combined;
   };
 
   ///////////////////////////////////////////////////////////////////////////
@@ -315,6 +331,19 @@ var _  = {};
     Tips      : assume only a single argument will be passed in to fn.
    */
   _.memoize = function(fn){
+      var alreadyCalled = false;
+      var result;
+      if(alreadyCalled) {
+        return result;
+      }
+      return function() {
+        if(!alreadyCalled) {
+          result = fn.apply(this,arguments);
+          alreadyCalled = true;
+        }
+          return result;
+      }
+
   };
   
 
