@@ -128,6 +128,9 @@ var _  = {};
                 the return value of the previous iterator call.
   */
   _.reduce = function(collection, iterator, accumulator) {
+    if(accumulator === undefined) {
+      accumulator = 0;
+    }
     var current = accumulator;
     if(Array.isArray(collection)) {
       for (var i = 0; i < collection.length; i++) {
@@ -136,11 +139,12 @@ var _  = {};
       return current;
     }else if (typeof collection === "object") {
       for ( key in collection) {
+        accumulator +=collection[key];
         current = iterator(current,collection[key]);
       }
       return current;
     }
-    
+    accumulator += current;
   };
 
   /*
@@ -152,6 +156,20 @@ var _  = {};
                 and finally a reference to the entire list.
   */
   _.map = function(collection, iterator) {
+    var modifiedCollection =[];
+    var modifiedCollectionObject= {};
+    if(Array.isArray(collection)) {
+      for( var i = 0 ; i < collection.length; i++) {
+        modifiedCollection.push(iterator(collection[i],i,collection));
+      }
+      return modifiedCollection;
+
+    }else if(typeof collection === "object") {
+      for( keys in collection) {
+        modifiedCollectionObject[keys] = iterator(collection[keys],keys,collection);
+      }
+      return modifiedCollectionObject;
+    }
   };
 
   /*
@@ -160,6 +178,20 @@ var _  = {};
   */
   _.uniq = function(array) {
     //Try using reduce for extra credits [optional]
+    var unique = [];
+    var exist = false;
+    unique.push(array[0]);
+    for( var i = 0 ; i<array.length;i++) {
+      unique.push(_.reduce(unique,function(a,b) {if(a != b) {return a;}},array[i]));
+    }
+    
+    for(var j = 0 ; j<unique.length;j++) {
+      if(unique[j] === undefined) {
+        unique.splice(j,1);
+        j--;
+      }
+    }
+    return unique;
   };
 
   /*
@@ -168,6 +200,21 @@ var _  = {};
   */
   _.every = function(collection, test) {
     //Try using reduce for extra credits [optional]
+    var check = true;
+    if(Array.isArray(collection)){
+      for(var i = 0; i<collection.length; i++) {
+        if(!test(collection[i])) {
+          return check = false;
+        }
+      } 
+    }else if(typeof collection === "object") {
+      for( keys in collection) {
+        if(!test(collection[keys])) {
+          return check = false;
+        }
+      }
+    }
+    return check;
   };
 
   /*
@@ -176,6 +223,21 @@ var _  = {};
   */
   _.some = function(collection, test) {
     //Try using every for extra credits [optional]
+    var check = false;
+    if(Array.isArray(collection)){
+      for(var i = 0; i<collection.length; i++) {
+        if(test(collection[i])) {
+          return check = true;
+        }
+      } 
+    }else if(typeof collection === "object") {
+      for( keys in collection) {
+        if(test(collection[keys])) {
+          return check = true;
+        }
+      }
+    }
+    return check;
   };
 
   /*
@@ -187,6 +249,21 @@ var _  = {};
    */
   _.invoke = function(collection, functionOrKey, args){
     //Try using map
+      var process = [];
+      var processObject = {};
+    
+    if(Array.isArray(collection)) {
+      for(var i=0; i<collection.length;i++) {
+        process.push(functionOrKey.apply(collection[i],Array.prototype.slice.call(arguments,2)));
+      }
+      return process;
+    }else if(typeof collection === "object" && typeof functionOrKey === 'string' ) {
+      for(keys in collection) {
+        processObject[keys] = collection[keys][functionOrKey].apply(collection[keys],Array.prototype.slice.call(arguments,2));
+      }
+      return processObject;
+      
+    }
   };
 
   /*
@@ -194,6 +271,13 @@ var _  = {};
     Output    : one object with all keys combined, older key will be overwritten by newer keys
    */
   _.extend = function(obj){
+    var combined = {};
+    for( var i = 0 ; i<arguments.length; i++) {
+      for( keys in arguments[i]) {
+        combined[keys] = arguments[i][keys];
+      }
+    }
+    return combined;
   };
 
 
@@ -202,6 +286,15 @@ var _  = {};
     Output    : one object with all keys combined, older key will not be overwritten
    */
   _.defaults = function(obj){
+    var combined = {};
+    for ( var i = 0; i<arguments.length; i++) {
+      for (keys in arguments[i]) {
+        if(! combined.hasOwnProperty(keys)) {
+          combined[keys] = arguments[i][keys];
+        }
+      }
+    }
+    return combined;
   };
 
   ///////////////////////////////////////////////////////////////////////////
@@ -238,6 +331,19 @@ var _  = {};
     Tips      : assume only a single argument will be passed in to fn.
    */
   _.memoize = function(fn){
+      var alreadyCalled = false;
+      var result;
+      if(alreadyCalled) {
+        return result;
+      }
+      return function() {
+        if(!alreadyCalled) {
+          result = fn.apply(this,arguments);
+          alreadyCalled = true;
+        }
+          return result;
+      }
+
   };
   
 

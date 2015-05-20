@@ -103,7 +103,7 @@
   });
 
   test('defaults', function() {
-    deepEqual(_.defaults({foo: 'apple'}, {bar: 'orange'}, {bundi: 'banana'}, {foo: 'apple'}), {foo: 'apple', bar: 'orange', bundi: 'banana'}, 'should extend multiple objects');
+    deepEqual(_.defaults({foo: 'apple'}, {bar: 'orange'}, {bundi: 'banana'}, {foo: 'pineapple'}), {foo: 'apple', bar: 'orange', bundi: 'banana'}, 'should extend multiple objects');
   });
 
   test('once', function() {
